@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @SpringBootApplication
-public class AsyncApplication {
+public class OrderApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AsyncApplication.class, args);
+        SpringApplication.run(OrderApplication.class, args);
     }
 
     @ControllerAdvice

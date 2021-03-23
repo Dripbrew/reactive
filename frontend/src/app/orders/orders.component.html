@@ -1,60 +1,95 @@
-<div class="container">
-  <h2>Please place a new Order!</h2>
-</div>
-<div class="container" *ngIf="response !== null">
-  <h3>Your order {{response.id}} was successfully placed, please check the status of order.</h3>
-</div>
-<div class="container" *ngIf="error !== null">
-  <h3>Your order could not be placed at the moment: {{error.message}}</h3>
-</div>
-<div class="container">
+<div class="container ">
+  <div class="my-3"><h3>Please place a new Order!</h3></div>
   <form [formGroup]="form" *ngIf="this.form" (ngSubmit)="createOrder()">
-    <h3 class="container">Product Quantities:</h3>
-    <div class="container" formArrayName="lineItems"
-         *ngFor="let item of form.get('lineItems')['controls']; let i = index;">
-      <li class="form-group input-group-lg" [formGroupName]="i">
-        {{ form.controls.lineItems['controls'][i].controls.name.value }}: <input formControlName='quantity' placeholder='10'>
-        <p>Only {{ form.controls.lineItems['controls'][i].controls.stock.value }} left in the stock!</p>
-      </li>
+
+    <div class="card">
+      <h5 class="card-header">Quantities</h5>
+      <div class="card-body">
+        <div formArrayName="lineItems">
+          <table class="table table-sm table-borderless">
+            <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Stock</th>
+              <th scope="col">Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of form.get('lineItems')['controls']; let i = index;" [formGroupName]="i">
+
+              <td class="align-middle">{{ item.controls.name.value }}</td>
+              <td class="align-middle">{{ item.controls.stock.value }}</td>
+              <td class="align-middle"><input type="number" class="form-control" formControlName='quantity'
+                                              placeholder='10'>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    &nbsp;
-    <div class="container">
-      <h3>Payment Mode:
-      <select class="form-group input-group-lg" formControlName="paymentMode">
-        <option *ngFor="let paymentMode of paymentModes">
-          {{paymentMode}}
-        </option>
-      </select>
-      </h3>
+
+    &nbsp;<div class="card mb-3">
+    <h5 class="card-header">
+      Payment and Address
+    </h5>
+    <div class="card-body">
+      <div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label" for="paymentMode">Payment Mode</label>
+          <div class="col-sm-9">
+            <select id="paymentMode" class="form-control form-control-sm" formControlName="paymentMode">
+              <option *ngFor="let paymentMode of paymentModes">
+                {{paymentMode}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div formGroupName="shippingAddress">
+          <div *ngFor="let item of addressItems" class="form-group row">
+            <label class="col-sm-3 col-form-label" [for]="item.name">{{item.title}}</label>
+            <div class="col-sm-9">
+              <input class="form-control" [id]="item.name" [placeholder]="item.title" [formControlName]="item.name"/>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
-    &nbsp;
-    <div class="container" formGroupName="shippingAddress">
-      <h3>Address:</h3>
-      <input class="form-control" placeholder="Name" formControlName="name">
-      <input class="form-control" placeholder="House" formControlName="house">
-      <input class="form-control" placeholder="Street" formControlName="street">
-      <input class="form-control" placeholder="City" formControlName="city">
-      <input class="form-control" placeholder="Zip" formControlName="zip">
+  </div>
+    <div class="alert alert-primary" role="alert" *ngIf="response !== null">
+      <p>Your order {{response.id}} was successfully placed, please check the status of order.</p>
     </div>
-    &nbsp;
+    <div class="alert alert-danger" role="alert" *ngIf="error !== null">
+      <p>Your order could not be placed at the moment: {{error.message}}</p>
+    </div>
     <div class="form-group">
-      <button class="btn btn-danger btn-block btn-lg">Place Order</button>
+      <button class="btn btn-primary btn-block">Place Order</button>
     </div>
   </form>
-</div>
 
-<div class="container">
-  <button class="btn btn-danger btn-block btn-lg" (click)="getOrders()">Get Previous Orders</button>
-</div>
+  <div class="card mb-3">
+    <h5 class="card-header">Previous Orders</h5>
+    <div class="card-body">
+      <button class="btn btn-outline-primary btn-block mb-3" (click)="getOrders()">Get Previous Orders</button>
+      <button class="btn btn-outline-primary btn-block mb-3" (click)="getOrderStream()">Get Previous Order Stream
+      </button>
 
-<div class="container">
-  <button class="btn btn-danger btn-block btn-lg" (click)="getOrderStream()">Get Previous Order Stream </button>
-</div>
-<div class="container" *ngIf="previousOrders !== null">
-  <h2>Your orders placed so far:</h2>
-  <ul>
-    <li *ngFor="let order of previousOrders | async">
-      <p>Order ID: {{ order.id }}, Order Status: {{order.orderStatus}}, Order Message: {{order.responseMessage}}</p>
-    </li>
-  </ul>
+      <div *ngFor="let order of previousOrders | async"
+           class="list-group-item flex-column align-items-start">
+        <div class="row">
+          <div class="col-sm-2"><h6>Id</h6></div>
+          <div class="col-sm-10"><h6>{{ order.id }}</h6></div>
+        </div>
+        <div class="row" >
+          <div class="col-sm-2">Status</div>
+          <div class="col-sm-10">{{order.orderStatus}}</div>
+        </div>
+        <div class="row" *ngIf="order.responseMessage">
+          <div class="col-sm-2"><small class="text-muted">Message</small></div>
+          <div class="col-sm-10"><small class="text-muted">{{order.responseMessage}}</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
